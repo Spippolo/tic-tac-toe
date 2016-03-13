@@ -86,7 +86,7 @@ int check_game_status(int click_tracker[], int round) {
         ||
         (click_tracker[2] == 1 && click_tracker[4] == 1 && click_tracker[6] == 1)
     ) {
-        printf("CHECK GAME STATUS: circle wins!\n");
+        printf("CHECK GAME STATUS: cross wins!\n");
         status = 0;
     } else if (
         (click_tracker[0] == 2 && click_tracker[1] == 2 && click_tracker[2] == 2)
@@ -105,7 +105,7 @@ int check_game_status(int click_tracker[], int round) {
         ||
         (click_tracker[2] == 2 && click_tracker[4] == 2 && click_tracker[6] == 2)
     ) {
-        printf("CHECK GAME STATUS: cross wins!\n");
+        printf("CHECK GAME STATUS: circle wins!\n");
         status = 0;
     }
 
