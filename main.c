@@ -61,6 +61,35 @@ void manage_click(ttt_items* items, int x, int y, int click_tracker[], int* roun
     }
 }
 
+int check_win(int click_tracker[], int value) {
+  int wins[8] = {
+    0b111000000,
+    0b000111000,
+    0b000000111,
+    0b100100100,
+    0b010010010,
+    0b001001001,
+    0b100010001,
+    0b001010100
+  };
+
+  int counter = 0;
+  for (int i=0;i < 9; i++) {
+    if (click_tracker[i] == value) {
+      counter += (int) pow(2, 8-i);
+    }
+  }
+  printf("Counter: %d\n", counter);
+  for (int i=0; i<8; i++) {
+    printf("%d == %d ??\n", wins[i] & counter, wins[i]);
+    if ((wins[i] & counter) == wins[i]) {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
 int check_game_status(int click_tracker[], int round) {
     int status = 1;
 
@@ -69,42 +98,12 @@ int check_game_status(int click_tracker[], int round) {
         status = 0;
     }
 
-    if (
-        (click_tracker[0] == 1 && click_tracker[1] == 1 && click_tracker[2] == 1)
-        ||
-        (click_tracker[3] == 1 && click_tracker[4] == 1 && click_tracker[5] == 1)
-        ||
-        (click_tracker[6] == 1 && click_tracker[7] == 1 && click_tracker[8] == 1)
-        ||
-        (click_tracker[0] == 1 && click_tracker[3] == 1 && click_tracker[6] == 1)
-        ||
-        (click_tracker[1] == 1 && click_tracker[4] == 1 && click_tracker[7] == 1)
-        ||
-        (click_tracker[2] == 1 && click_tracker[5] == 1 && click_tracker[8] == 1)
-        ||
-        (click_tracker[0] == 1 && click_tracker[4] == 1 && click_tracker[8] == 1)
-        ||
-        (click_tracker[2] == 1 && click_tracker[4] == 1 && click_tracker[6] == 1)
-    ) {
+    int cross_win = check_win(click_tracker, 1);
+    int circle_win = check_win(click_tracker, 2);
+    if (cross_win) {
         printf("CHECK GAME STATUS: cross wins!\n");
         status = 0;
-    } else if (
-        (click_tracker[0] == 2 && click_tracker[1] == 2 && click_tracker[2] == 2)
-        ||
-        (click_tracker[3] == 2 && click_tracker[4] == 2 && click_tracker[5] == 2)
-        ||
-        (click_tracker[6] == 2 && click_tracker[7] == 2 && click_tracker[8] == 2)
-        ||
-        (click_tracker[0] == 2 && click_tracker[3] == 2 && click_tracker[6] == 2)
-        ||
-        (click_tracker[1] == 2 && click_tracker[4] == 2 && click_tracker[7] == 2)
-        ||
-        (click_tracker[2] == 2 && click_tracker[5] == 2 && click_tracker[8] == 2)
-        ||
-        (click_tracker[0] == 2 && click_tracker[4] == 2 && click_tracker[8] == 2)
-        ||
-        (click_tracker[2] == 2 && click_tracker[4] == 2 && click_tracker[6] == 2)
-    ) {
+    } else if (circle_win) {
         printf("CHECK GAME STATUS: circle wins!\n");
         status = 0;
     }
