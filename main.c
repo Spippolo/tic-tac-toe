@@ -111,6 +111,39 @@ int check_game_status(int click_tracker[], int round) {
     return status;
 }
 
+int choose_countermove(int click_tracker[]) {
+  int index = rand() % 9;
+  if (click_tracker[index] == 0) {
+    return index;
+  } else {
+    for (int i = 1; i < 9; i++) {
+      index = (index + 1) % 9;
+      if (click_tracker[index] == 0) {
+        return index;
+      }
+    }
+  }
+
+  return -1;
+}
+
+void computer_play(ttt_items* items, int click_tracker[], int* round) {
+  int index = choose_countermove(click_tracker); // TODO choose an index
+
+  printf("MANAGE CLICK: index = %d\n", index);
+  printf("MANAGE CLICK: round = %d\n", *round);
+
+  if (index > -1 && click_tracker[index] == 0) {
+      int cross = *round % 2;
+
+      click_tracker[index] = cross ? 1 : 2;
+      SDL_Rect* rect = clicked_rect(index);
+
+      SDL_BlitSurface(cross ? items->cross : items->circle, NULL, items->screen, rect);
+      (*round)++;
+  }
+}
+
 int main(int argc, char *argv[]) {
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         return 1;
@@ -163,6 +196,10 @@ int main(int argc, char *argv[]) {
                 mouse = (SDL_MouseButtonEvent*) &event;
                 manage_click(&items, mouse->x, mouse->y, click_tracker, &round);
                 running = check_game_status(click_tracker, round);
+                // make computer move
+                if (running != 0) {
+                  computer_play(&items, click_tracker, &round);
+                }
                 break;
             }
         }
