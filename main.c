@@ -44,7 +44,7 @@ SDL_Rect* clicked_rect(int index) {
     return ret;
 }
 
-void manage_click(ttt_items* items, int x, int y, int click_tracker[], int* round) {
+int manage_click(ttt_items* items, int x, int y, int click_tracker[], int* round) {
     int index = clicked_box(x, y);
 
     printf("MANAGE CLICK: index = %d\n", index);
@@ -58,6 +58,9 @@ void manage_click(ttt_items* items, int x, int y, int click_tracker[], int* roun
 
         SDL_BlitSurface(cross ? items->cross : items->circle, NULL, items->screen, rect);
         (*round)++;
+        return 1;
+    } else {
+      return 0;
     }
 }
 
@@ -194,19 +197,24 @@ int main(int argc, char *argv[]) {
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 mouse = (SDL_MouseButtonEvent*) &event;
-                manage_click(&items, mouse->x, mouse->y, click_tracker, &round);
-                running = check_game_status(click_tracker, round);
-                // make computer move
-                if (running != 0) {
-                  computer_play(&items, click_tracker, &round);
+                int click_status = manage_click(&items, mouse->x, mouse->y, click_tracker, &round);
+                if (click_status == 1) {
+                  running = check_game_status(click_tracker, round);
+                  SDL_UpdateWindowSurface(window);
+                  // make computer move
+                  if (running != 0) {
+                    computer_play(&items, click_tracker, &round);
+                    running = check_game_status(click_tracker, round);
+                    SDL_UpdateWindowSurface(window);
+                  }
                 }
                 break;
             }
         }
-        SDL_UpdateWindowSurface(window);
+
     }
 
-    SDL_Delay(5000);
+    SDL_Delay(3000);
 
     SDL_FreeSurface(items.cross);
     SDL_FreeSurface(items.circle);
